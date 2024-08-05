@@ -58,5 +58,5 @@ int RecBuffer::getRecord(union Attribute *rec, int slotNum) {
     // Load the record data into the rec data structure
     memcpy(rec, slotPointer, recordSize);
 
-    return SUCCESS;  // Return SUCCESS to indicate the operation was successful
+    return recordSize;  // Return SUCCESS to indicate the operation was successful
 }
