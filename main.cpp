@@ -140,7 +140,7 @@ void update_student_schema()
       Attribute attrCatRecord[ATTRCAT_NO_ATTRS]; // Declare an array to store the attribute catalog record
       int recordsize;
       // Load the record at index i into attrCatRecord
-      recordsize=attrCatBuffer.getRecord(attrCatRecord, i);
+      attrCatBuffer.getRecord(attrCatRecord, i);
 
       // Check if the record belongs to the Student relation and has the "Class" attribute
       if (strcmp(attrCatRecord[ATTRCAT_REL_NAME_INDEX].sVal, "Students") == 0)
@@ -149,7 +149,11 @@ void update_student_schema()
         {
           unsigned char buffer[BLOCK_SIZE];
           Disk::readBlock(buffer, ATTRCAT_BLOCK);
-          memcpy(buffer + 52 + recordsize * i + 16, "Batch", ATTR_SIZE);
+          int attrCount = attrCatHeader.numAttrs;  // Number of attributes in the record
+          int slotCount =attrCatHeader.numSlots;  // Number of slots in the block
+          int recordSize = attrCount * ATTR_SIZE;
+          unsigned char *slotPointer = buffer + HEADER_SIZE + slotCount + (recordSize * i)+16;
+          memcpy(slotPointer, "Batch", ATTR_SIZE);
           Disk::writeBlock(buffer, ATTRCAT_BLOCK);
           return;
         }
