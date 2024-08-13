@@ -43,7 +43,7 @@ RecId BlockAccess::linearSearch(int relId, char attrName[ATTR_SIZE], union Attri
         Attribute record[header.numAttrs];
         recBuffer.getRecord(record, slot);
         
-        // Slot map to track the occupancy status of each slot in the block
+        // Slot map to track the occupancy status of each slot in the block.
         unsigned char slotMap[header.numSlots];
         recBuffer.getSlotMap(slotMap);
 
