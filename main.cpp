@@ -163,19 +163,47 @@ void update_student_schema()
 }
 
 // Main function
-int main(int argc, char *argv[])
-{
-  Disk disk_run; // Initialize a Disk object
-  // Print the current relations and attributes
-  std::cout << "Before Schema Update:" << std::endl;
-  print_relations_attributes();
+// int main(int argc, char *argv[])
+// {
+//   Disk disk_run; // Initialize a Disk object
+//   StaticBuffer buffer;
+//   OpenRelTable cache;
+//   // Print the current relations and attributes
+//   std::cout << "Before Schema Update:" << std::endl;
+//   // print_relations_attributes();
 
-  // Update the schema of the Student relation
-  update_student_schema();
+//   // // Update the schema of the Student relation
+//   // update_student_schema();
 
-  // Print the relations and attributes again to confirm the update
-  std::cout << "After Schema Update:" << std::endl;
-  print_relations_attributes();
+//   // Print the relations and attributes again to confirm the update
+//   // std::cout << "After Schema Update:" << std::endl;
+//   // print_relations_attributes();
 
-  return 0; // Return success
+// //   for (int i = 0; i <=2; i++) {
+// //     RelCatEntry relCatBuf;
+// //     RelCacheTable::getRelCatEntry(i, &relCatBuf);
+
+// //     printf("Relation: %s\n", relCatBuf.relName);
+
+// //     for (int j = 0; j < relCatBuf.numAttrs; j++) {
+// //       AttrCatEntry attrCatBuf;
+// //       AttrCacheTable::getAttrCatEntry(i, j, &attrCatBuf);
+// //       const char* attrType = (attrCatBuf.attrType == NUMBER)
+// //         ? "NUM"
+// //         : "STR";
+// //       printf("\t%s : %s\n", attrCatBuf.attrName, attrType);
+// //     }
+// //   }
+
+
+
+// //   return 0; // Return success
+// // }
+
+int main(int argc, char *argv[]) {
+  Disk disk_run;
+  StaticBuffer buffer;
+  OpenRelTable cache;
+
+  return FrontendInterface::handleFrontend(argc, argv);
 }

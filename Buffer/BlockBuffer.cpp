@@ -3,7 +3,18 @@
 #include <cstdlib>
 #include <cstring>
 // The declarations for these functions can be found in "BlockBuffer.h"
-
+int compareAttrs(union Attribute attr1, union Attribute attr2, int attrType) {
+    int diff;
+    (attrType == NUMBER)
+        ? diff = attr1.nVal - attr2.nVal
+        : diff = strcmp(attr1.sVal, attr2.sVal);
+    if (diff > 0)
+        return 1; // attr1 > attr2
+    else if (diff < 0)
+        return -1; //attr 1 < attr2
+    else 
+        return 0;
+}
 // Constructor for the BlockBuffer class
 BlockBuffer::BlockBuffer(int blockNum) {
     // Initialize the member variable blockNum with the argument passed to the constructor
@@ -59,4 +70,51 @@ int RecBuffer::getRecord(union Attribute *rec, int slotNum) {
     memcpy(rec, slotPointer, recordSize);
 
     return SUCCESS;  // Return SUCCESS to indicate the operation was successful
+}
+//Stage 3 
+int BlockBuffer::loadBlockAndGetBufferPtr(unsigned char **buffPtr) {
+  // check whether the block is already present in the buffer using StaticBuffer.getBufferNum()
+  int bufferNum = StaticBuffer::getBufferNum(this->blockNum);
+
+  if (bufferNum == E_BLOCKNOTINBUFFER) {
+    bufferNum = StaticBuffer::getFreeBuffer(this->blockNum);
+
+    if (bufferNum == E_OUTOFBOUND) {
+      return E_OUTOFBOUND;
+    }
+
+    Disk::readBlock(StaticBuffer::blocks[bufferNum], this->blockNum);
+  }
+
+  // store the pointer to this buffer (blocks[bufferNum]) in *buffPtr
+  *buffPtr = StaticBuffer::blocks[bufferNum];
+
+  return SUCCESS;
+}
+
+/* used to get the slotmap from a record block
+NOTE: this function expects the caller to allocate memory for `*slotMap`
+*/
+int RecBuffer::getSlotMap(unsigned char *slotMap) {
+  unsigned char *bufferPtr;
+
+  // get the starting address of the buffer containing the block using loadBlockAndGetBufferPtr().
+  int ret = loadBlockAndGetBufferPtr(&bufferPtr);
+  if (ret != SUCCESS) {
+    return ret;
+  }
+
+  struct HeadInfo head;
+  // get the header of the block using getHeader() function
+  ret = getHeader(&head);
+
+  int slotCount = head.numSlots;
+
+  // get a pointer to the beginning of the slotmap in memory by offsetting HEADER_SIZE
+  unsigned char *slotMapInBuffer = bufferPtr + HEADER_SIZE;
+
+  // copy the values from `slotMapInBuffer` to `slotMap` (size is `slotCount`)
+  memcpy(slotMap, slotMapInBuffer, slotCount);
+
+  return SUCCESS;
 }
